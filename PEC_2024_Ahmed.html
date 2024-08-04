@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nearest Polling Station Locator</title>
+</head>
+<body>
+    <h1>Find Your Nearest Polling Station in Karachi</h1>
+    <button onclick="findNearestStation()">Find Nearest Station</button>
+
+    <script>
+        const stations = [
+            { name: "Mega DHA Karachi", lat: 24.8362, lng: 67.07028 },
+            { name: "Mega North Nazimabad", lat: 24.94628, lng: 67.05121 },
+            { name: "Mega Siemens Chowrangi", lat: 24.90597, lng: 67.00565 },
+            { name: "Lyari", lat: 24.86835, lng: 66.99618 },
+            { name: "Liaqatabad-KHI", lat: 24.90964, lng: 67.03832 },
+            { name: "Landhi", lat: 24.84046, lng: 67.18683 },
+            { name: "Karachi Malir", lat: 24.87141, lng: 67.19766 },
+            { name: "Gulshan-e-Hadid", lat: 24.86552, lng: 67.35183 },
+            { name: "Executive Shahra-e-Quaideen", lat: 24.86683, lng: 67.05254 },
+            { name: "Executive Clifton", lat: 24.82895, lng: 67.03379 },
+            { name: "DHA ,Nisar Shaheed Park", lat: 24.82647, lng: 67.06331 },
+            { name: "Big Center East", lat: 24.93853, lng: 67.15083 },
+            { name: "Awami Markaz Shahra-e-Faisal", lat: 24.87035, lng: 67.09021 },
+            { name: "Orangi Town", lat: 24.94168, lng: 66.99818 },
+            { name: "Saoodabad", lat: 24.90206, lng: 67.19748 },
+            { name: "Shah Faisal Colony", lat: 24.88466, lng: 67.14671 }
+        ];
+
+        function findNearestStation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    let nearestStation = null;
+                    let minDistance = Infinity;
+
+                    for (let station of stations) {
+                        const distance = getDistanceFromLatLonInKm(userLat, userLng, station.lat, station.lng);
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            nearestStation = station;
+                        }
+                    }
+
+                    if (nearestStation) {
+                        const directionsLink = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${nearestStation.lat},${nearestStation.lng}&travelmode=driving`;
+                        window.open(directionsLink, "_blank");
+                    }
+                });
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+
+        function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+            var R = 6371; // Radius of the earth in km
+            var dLat = deg2rad(lat2-lat1);  // deg2rad below
+            var dLon = deg2rad(lon2-lon1);
+            var a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            var distance = R * c; // Distance in km
+            return distance;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
+    </script>
+</body>
+</html>
